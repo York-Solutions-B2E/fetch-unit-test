@@ -4,9 +4,7 @@
 
 // dependency injection
 async function function_that_uses_fetch(_fetch = fetch) {
-    const result = await _fetch("http://not.anything.com")
-
-    console.log(result)
+    const result = await _fetch("http://ip.jsontest.com")
 
     // Fail first/fast
     if (result.ok === false)
@@ -45,7 +43,9 @@ async function test_function_that_uses_fetch() {
             resolve({
                 ok: true,
                 json: () => {
-                    return new Promise(resolve => resolve())
+                    return new Promise(resolve => resolve({
+                        ip: "127.0.0.1"
+                    }))
                 }
             })
         }))
@@ -53,7 +53,10 @@ async function test_function_that_uses_fetch() {
 
     response = await function_that_uses_fetch(_fetch_ok)
 
-    if (response === false)
+    // object?.field checks if the object is defined:
+    //   if so, proceed as normal i.e. object.field
+    //   otherwise return undefined
+    if (response?.ip === "127.0.0.1")
         console.log("Passed")
     else
         console.log("Failed", response)
