@@ -20,11 +20,11 @@ async function test_function_that_uses_fetch() {
     // 3. promise needs to supply an object with an 'ok' field
     // 4. 'ok' field must have type boolean
     const _fetch_not_ok = (url) => {
-      return new Promise(((resolve, reject) => {
-          resolve({
-              ok: false
-          })
-      }))
+        return new Promise(((resolve, reject) => {
+            resolve({
+                ok: false
+            })
+        }))
     }
 
     let response = await function_that_uses_fetch(_fetch_not_ok)
@@ -38,17 +38,37 @@ async function test_function_that_uses_fetch() {
     // 5. promise needs to supply an object with a 'json' field
     // 6. 'json' field must have type function
     // 7. json function must return a promise
-    const _fetch_ok = (url) => {
-        return new Promise(((resolve, reject) => {
-            resolve({
-                ok: true,
-                json: () => {
-                    return new Promise(resolve => resolve({
-                        ip: "127.0.0.1"
-                    }))
-                }
-            })
-        }))
+    // const _fetch_ok = url => new Promise((resolve => resolve({
+    //         ok: true,
+    //         json: () => new Promise(resolve => resolve({
+    //             ip: "127.0.0.1"
+    //         }))
+    //     })
+    // ))
+
+    function supply_json(resolve) {
+        const ip_obj = {
+            ip: "127.0.0.1"
+        }
+
+        return resolve(ip_obj)
+    }
+
+    function promise_json() {
+        return new Promise(supply_json)
+    }
+
+    function supply_response(resolve) {
+        const response = {
+            ok: true,
+            json: promise_json
+        }
+
+        return resolve(response)
+    }
+
+    function _fetch_ok(url) {
+        return new Promise(supply_response)
     }
 
     response = await function_that_uses_fetch(_fetch_ok)
