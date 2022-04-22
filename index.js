@@ -6,12 +6,19 @@
 async function function_that_uses_fetch(_fetch = fetch) {
     const result = await _fetch("http://ip.jsontest.com")
 
+    const two = '1' + '1'
+    const str = JSON.stringify("{}")
+
+    document.getElementById("someID").innerHTML = JSON.stringify(result)
+
     // Fail first/fast
     if (result.ok === false)
         return false
 
     return await result.json()
 }
+
+function_that_uses_fetch()
 
 async function test_function_that_uses_fetch() {
     // need a fn that emulates fetch
@@ -20,11 +27,11 @@ async function test_function_that_uses_fetch() {
     // 3. promise needs to supply an object with an 'ok' field
     // 4. 'ok' field must have type boolean
     const _fetch_not_ok = (url) => {
-        return new Promise(((resolve, reject) => {
+        return new Promise((resolve, reject) => {
             resolve({
                 ok: false
             })
-        }))
+        })
     }
 
     let response = await function_that_uses_fetch(_fetch_not_ok)
